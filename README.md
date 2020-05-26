@@ -1,6 +1,6 @@
 # cf: container format
 
-Super basic container format for storing files in a package.
+Super basic **immutable** container format for storing files in a package. Doesn't support compression flags, user permission or anything like that. Only information stored is file name, size, hash and offset in the container.
 
 <p align="center">
   <img src="https://raw.githubusercontent.com/takeiteasy/cf/master/spec.png">

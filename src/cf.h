@@ -13,7 +13,6 @@
 #include <string.h>
 #include <assert.h>
 #include <stdint.h>
-#include <stdarg.h>
 
 #define CF_MAGIC 0x4346
 
@@ -39,7 +38,7 @@ struct cf_tree {
   FILE* fh;
 };
 
-void cfwrite(const char* path, int n, ...);
+void cfwrite(const char* path, int n, const char** files);
 void cfread(struct cf_tree* tree, const char* path);
 struct cf_entry* cffind(struct cf_tree* tree, const char* path);
 unsigned char* cfdata(struct cf_tree* tree, struct cf_entry* entry);

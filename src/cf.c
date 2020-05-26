@@ -71,7 +71,7 @@ static unsigned int crc32(FILE* fp) {
   return v ^ 0xFFFFFFFF;
 }
 
-void cfwrite(const char* path, int n, ...) {
+void cfwrite(const char* path, int n, const char** files) {
   FILE* fh = fopen(path, "w");
   assert(fh);
   
@@ -82,15 +82,11 @@ void cfwrite(const char* path, int n, ...) {
   fwrite(&header, sizeof(struct cf_header), 1, fh);
   long long offset = ftell(fh);
   
-  const char** file_names = malloc(n * sizeof(const char*));
   struct cf_entry* header_map = malloc(n * sizeof(struct cf_entry));
-  va_list ap;
-  va_start(ap, n);
   for (int i = 0; i < n; ++i) {
-    file_names[i] = va_arg(ap, const char*);
-    long long fn_len = strlen(file_names[i]);
+    long long fn_len = strlen(files[i]);
     header_map[i].name_sz = fn_len;
-    FILE* in = fopen(file_names[i], "r");
+    FILE* in = fopen(files[i], "r");
     assert(in);
     header_map[i].hash = crc32(in);
     header_map[i].f_sz = ftell(in);
@@ -98,17 +94,16 @@ void cfwrite(const char* path, int n, ...) {
     header_map[i].f_off = 0;
     offset += sizeof(struct cf_entry) + fn_len * sizeof(char);
   }
-  va_end(ap);
   
   for (int i = 0; i < n; ++i) {
     header_map[i].f_off = offset;
     fwrite(&header_map[i], sizeof(struct cf_entry), 1, fh);
-    fwrite((void*)file_names[i], header_map[i].name_sz * sizeof(char), 1, fh);
+    fwrite((void*)files[i], header_map[i].name_sz * sizeof(char), 1, fh);
     offset += header_map[i].f_sz;
   }
   
   for (int i = 0; i < n; ++i) {
-    FILE* in = fopen(file_names[i], "r");
+    FILE* in = fopen(files[i], "r");
     long long f_sz = header_map[i].f_sz;
     unsigned char* data = malloc(f_sz * sizeof(unsigned char));
     fread(data, f_sz * sizeof(unsigned char), 1, in);
@@ -116,7 +111,6 @@ void cfwrite(const char* path, int n, ...) {
     free(data);
   }
   
-  free(file_names);
   free(header_map);
   fclose(fh);
 }
