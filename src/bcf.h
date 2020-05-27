@@ -17,13 +17,12 @@
 #define BCF_MAGIC 0x4346
 
 struct bcf_header {
-  short magic;
-  int n_files;
+  int magic, n_files;
 };
 
 struct bcf_entry {
   long long name_sz, f_sz, f_off;
-  unsigned int hash;
+  unsigned long long hash;
 };
 
 struct bcf_tree_entry {

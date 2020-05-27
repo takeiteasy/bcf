@@ -16,7 +16,7 @@ $(EXE).o: tests/test.c $(LIB).dylib
 $(LIB).dylib: $(LIB).o
 	$(CC) -shared -fpic -o $@ $^
 
-$(LIB).o: src/bcf.c $(OUT)
+$(LIB).o: src/bcf.* $(OUT)
 	$(CC) -c -o $@ $<
 
 $(OUT):

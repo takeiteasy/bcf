@@ -2,7 +2,7 @@
           
 int main(int argc, const char* argv[]) {
   struct bcf_tree tree;
-  bcfread(&tree, "tests/test.cf");
+  bcfread(&tree, "tests/test.bcf");
   
   struct bcf_tree_entry* e = NULL;
   for (int i = 0; i < tree.n_entries; ++i) {

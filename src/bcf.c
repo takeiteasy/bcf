@@ -88,7 +88,7 @@ void bcfwrite(const char* path, int n, const char** files) {
     header_map[i].name_sz = fn_len;
     FILE* in = fopen(files[i], "r");
     assert(in);
-    header_map[i].hash = crc32(in);
+    header_map[i].hash = (unsigned long long)crc32(in);
     header_map[i].f_sz = ftell(in);
     fclose(in);
     header_map[i].f_off = 0;
