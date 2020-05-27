@@ -1,12 +1,12 @@
 //
-//  cf.c
-//  cf
+//  bcf.c
+//  bcf
 //
 //  Created by Rory B. Bellows on 25/05/2020.
 //  Copyright © 2020 Rory B. Bellows. All rights reserved.
 //
 
-#include "cf.h"
+#include "bcf.h"
 
 static unsigned int crc32_tab[] = {
   0x00000000L, 0x77073096L, 0xEE0E612CL, 0x990951BAL, 0x076DC419L,
@@ -71,18 +71,18 @@ static unsigned int crc32(FILE* fp) {
   return v ^ 0xFFFFFFFF;
 }
 
-void cfwrite(const char* path, int n, const char** files) {
+void bcfwrite(const char* path, int n, const char** files) {
   FILE* fh = fopen(path, "w");
   assert(fh);
   
-  struct cf_header header = {
-    .magic = CF_MAGIC,
+  struct bcf_header header = {
+    .magic = BCF_MAGIC,
     .n_files = n
   };
-  fwrite(&header, sizeof(struct cf_header), 1, fh);
+  fwrite(&header, sizeof(struct bcf_header), 1, fh);
   long long offset = ftell(fh);
   
-  struct cf_entry* header_map = malloc(n * sizeof(struct cf_entry));
+  struct bcf_entry* header_map = malloc(n * sizeof(struct bcf_entry));
   for (int i = 0; i < n; ++i) {
     long long fn_len = strlen(files[i]);
     header_map[i].name_sz = fn_len;
@@ -92,12 +92,12 @@ void cfwrite(const char* path, int n, const char** files) {
     header_map[i].f_sz = ftell(in);
     fclose(in);
     header_map[i].f_off = 0;
-    offset += sizeof(struct cf_entry) + fn_len * sizeof(char);
+    offset += sizeof(struct bcf_entry) + fn_len * sizeof(char);
   }
   
   for (int i = 0; i < n; ++i) {
     header_map[i].f_off = offset;
-    fwrite(&header_map[i], sizeof(struct cf_entry), 1, fh);
+    fwrite(&header_map[i], sizeof(struct bcf_entry), 1, fh);
     fwrite((void*)files[i], header_map[i].name_sz * sizeof(char), 1, fh);
     offset += header_map[i].f_sz;
   }
@@ -115,19 +115,19 @@ void cfwrite(const char* path, int n, const char** files) {
   fclose(fh);
 }
 
-void cfread(struct cf_tree* tree, const char* path) {
+void bcfread(struct bcf_tree* tree, const char* path) {
   assert(tree);
   tree->fh = fopen(path, "r");
   assert(tree->fh);
   
-  struct cf_header header;
-  fread(&header, sizeof(struct cf_header), 1, tree->fh);
-  assert(header.magic == CF_MAGIC && header.n_files);
+  struct bcf_header header;
+  fread(&header, sizeof(struct bcf_header), 1, tree->fh);
+  assert(header.magic == BCF_MAGIC && header.n_files);
   
   tree->n_entries = header.n_files;
-  tree->entries = malloc(header.n_files * sizeof(struct cf_tree_entry));
+  tree->entries = malloc(header.n_files * sizeof(struct bcf_tree_entry));
   for (int i = 0; i < header.n_files; ++i) {
-    fread(&tree->entries[i].entry, sizeof(struct cf_entry), 1, tree->fh);
+    fread(&tree->entries[i].entry, sizeof(struct bcf_entry), 1, tree->fh);
     tree->entries[i].fp = malloc(tree->entries[i].entry.name_sz * sizeof(char));
     fread(tree->entries[i].fp, tree->entries[i].entry.name_sz * sizeof(char), 1, tree->fh);
     tree->entries[i].fp[tree->entries[i].entry.name_sz] = '\0';
@@ -137,7 +137,7 @@ void cfread(struct cf_tree* tree, const char* path) {
   rewind(tree->fh);
 }
 
-struct cf_entry* cffind(struct cf_tree* tree, const char* path) {
+struct bcf_entry* bcffind(struct bcf_tree* tree, const char* path) {
   assert(tree);
   size_t path_len = strlen(path);
   for (int i = 0; i < tree->n_entries; ++i)
@@ -146,7 +146,7 @@ struct cf_entry* cffind(struct cf_tree* tree, const char* path) {
   return NULL;
 }
 
-unsigned char* cfdata(struct cf_tree* tree, struct cf_entry* entry) {
+unsigned char* bcfdata(struct bcf_tree* tree, struct bcf_entry* entry) {
   assert(tree && entry && entry->f_off < tree->fsize);
   unsigned char* data = malloc(entry->f_sz * sizeof(unsigned char));
   fsetpos(tree->fh, &entry->f_off);
@@ -154,10 +154,10 @@ unsigned char* cfdata(struct cf_tree* tree, struct cf_entry* entry) {
   return data;
 }
 
-void cffree(struct cf_tree* tree) {
+void bcffree(struct bcf_tree* tree) {
   fclose(tree->fh);
   for (int i = 0; i < tree->n_entries; ++i)
     free(tree->entries[i].fp);
   free(tree->entries);
-  memset(tree, 0, sizeof(struct cf_tree));
+  memset(tree, 0, sizeof(struct bcf_tree));
 }

@@ -1,6 +1,5 @@
 OUT=build/
-LIB=$(OUT)cf
-SRC=src/cf.c
+LIB=$(OUT)bcf
 EXE=$(OUT)test
 CC=clang
 
@@ -17,7 +16,7 @@ $(EXE).o: tests/test.c $(LIB).dylib
 $(LIB).dylib: $(LIB).o
 	$(CC) -shared -fpic -o $@ $^
 
-$(LIB).o: src/cf.c $(OUT)
+$(LIB).o: src/bcf.c $(OUT)
 	$(CC) -c -o $@ $<
 
 $(OUT):

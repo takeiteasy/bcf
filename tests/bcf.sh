@@ -1,6 +1,5 @@
 #!/bin/sh
-# This isn't working yet
-# ./cf.sh [files] > out
+# ./bcf.sh [files] > out
 
 print_int() {
   printf "%.8x" $1 | sed -E 's/(..)(..)(..)(..)/0: \4\3\2\1/' | xxd -r -g00
@@ -27,8 +26,8 @@ do
   print_long $FSZ
   print_long $OFFSET
   OFFSET=$(echo "$OFFSET + $FSZ" | bc)
-  print_long $(printf "%d\n" "0x"$(crc32 tests/res/test.png))
-  echo $VAR
+  print_long $(printf "%d" "0x"$(crc32 tests/res/test.png))
+  printf "%s" $VAR
 done
 
 for VAR in "$@"

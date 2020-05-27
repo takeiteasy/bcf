@@ -1,9 +1,11 @@
-# cf: container format
+# bcf: basic container format
 
 Super basic **immutable** container format for storing files in a package. Doesn't support compression flags, user permission or anything like that. Only information stored is file name, size, hash and offset in the container.
 
+See `tests/bcf.sh` for example of a writer done in only shell.
+
 <p align="center">
-  <img src="https://raw.githubusercontent.com/takeiteasy/cf/master/spec.png">
+  <img src="https://raw.githubusercontent.com/takeiteasy/bcf/master/spec.png">
 </p>
 
 ## License
