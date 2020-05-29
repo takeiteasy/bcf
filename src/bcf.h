@@ -1,10 +1,5 @@
-//
-//  bcf.h
-//  bcf
-//
-//  Created by Rory B. Bellows on 25/05/2020.
-//  Copyright © 2020 Rory B. Bellows. All rights reserved.
-//
+// Copyright © 2020 Rory B. Bellows.
+// Released under a 3-clause BSD License. See README.
 
 #ifndef BCF_H
 #define BCF_H

@@ -26,7 +26,7 @@ do
   print_long $FSZ
   print_long $OFFSET
   OFFSET=$(echo "$OFFSET + $FSZ" | bc)
-  print_long $(printf "%d" "0x"$(crc32 tests/res/test.png))
+  print_long $(printf "%d" "0x"$(crc32 $VAR))
   printf "%s" $VAR
 done
 

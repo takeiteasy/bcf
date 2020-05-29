@@ -9,7 +9,7 @@ int main(int argc, const char* argv[]) {
   free(test_files);
   
   struct bcf_tree tree;
-  bcfread(&tree, "build/test.cf");
+  bcfread(&tree, "build/test.bcf");
   struct bcf_entry* entry = bcffind(&tree, "tests/res/test2.png");
   unsigned char* data = bcfdata(&tree, entry);
   FILE* fh = fopen("build/out.png", "w");
